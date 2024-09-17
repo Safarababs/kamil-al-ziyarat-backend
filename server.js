@@ -11,7 +11,7 @@ const PORT = 5000;
 // Middleware
 app.use(
   cors({
-    origin: "https://kamil-al-ziyarat.netlify.app",
+    origin: "https://kamil-al-ziyarat.netlify.app/",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
