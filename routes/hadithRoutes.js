@@ -3,20 +3,26 @@ const router = express.Router();
 const Hadith = require("../models/Hadith");
 
 // Get hadiths by chapter number
-router.get("/get-hadiths", async (req, res) => {
-  const { chapterNumber } = req.query;
+router.get("/get-hadith/:chapterNumber/:hadithNumber", async (req, res) => {
+  const { chapterNumber, hadithNumber } = req.params;
 
-  if (!chapterNumber) {
-    return res.status(400).send("Chapter number is required");
+  if (!chapterNumber || !hadithNumber) {
+    return res.status(400).send("Chapter and Hadith numbers are required");
   }
 
   try {
-    const hadiths = await Hadith.find({
+    const hadith = await Hadith.findOne({
       chapterNumber: parseInt(chapterNumber, 10),
+      hadithNumber: parseInt(hadithNumber, 10),
     });
-    res.json(hadiths);
+
+    if (!hadith) {
+      return res.status(404).send("Hadith not found");
+    }
+
+    res.json(hadith);
   } catch (error) {
-    console.error("Error fetching hadiths:", error);
+    console.error("Error fetching hadith:", error);
     res.status(500).send("Server error");
   }
 });
