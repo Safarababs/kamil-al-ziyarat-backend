@@ -2,27 +2,47 @@ const express = require("express");
 const router = express.Router();
 const Hadith = require("../models/Hadith");
 
-// Get hadiths by chapter number
+// Get hadiths by chapter number and hadith number
 router.get("/get-hadith/:chapterNumber/:hadithNumber", async (req, res) => {
   const { chapterNumber, hadithNumber } = req.params;
 
-  if (!chapterNumber || !hadithNumber) {
-    return res.status(400).send("Chapter and Hadith numbers are required");
-  }
+  console.log(
+    `Fetching Hadith with Chapter: ${chapterNumber}, Number: ${hadithNumber}`
+  );
 
   try {
+    // Log all hadiths for debugging
+    const allHadiths = await Hadith.find({});
+    console.log("All Hadiths:", allHadiths); // Log all Hadiths
+
     const hadith = await Hadith.findOne({
       chapterNumber: parseInt(chapterNumber, 10),
-      hadithNumber: parseInt(hadithNumber, 10),
+      hadithNumber: hadithNumber,
     });
 
+    console.log("Fetched Hadith:", hadith);
+
     if (!hadith) {
+      console.log(
+        `No hadith found for Chapter: ${chapterNumber}, Hadith: ${hadithNumber}`
+      );
       return res.status(404).send("Hadith not found");
     }
 
     res.json(hadith);
   } catch (error) {
     console.error("Error fetching hadith:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+// Get all hadiths
+router.get("/get-all-hadiths", async (req, res) => {
+  try {
+    const hadiths = await Hadith.find({});
+    res.json(hadiths);
+  } catch (error) {
+    console.error("Error fetching hadiths:", error);
     res.status(500).send("Server error");
   }
 });
@@ -39,13 +59,9 @@ router.post("/add-hadith", async (req, res) => {
   }
 });
 
-// Update a hadith by ID
 router.put("/update-hadith/:id", async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-
-  console.log("Received ID:", id);
-  console.log("Received update data:", updateData); // Log the incoming data
 
   if (!updateData || Object.keys(updateData).length === 0) {
     return res.status(400).json({ message: "No update data provided" });
@@ -54,7 +70,7 @@ router.put("/update-hadith/:id", async (req, res) => {
   try {
     const updatedHadith = await Hadith.findByIdAndUpdate(id, updateData, {
       new: true,
-      runValidators: true, // Ensures that the update adheres to schema validation
+      runValidators: true,
     });
 
     if (!updatedHadith) {
@@ -62,14 +78,13 @@ router.put("/update-hadith/:id", async (req, res) => {
     }
     res.json(updatedHadith);
   } catch (error) {
-    console.error("Error updating Hadith:", error); // Log the actual error
+    console.error("Error updating Hadith:", error);
     res
       .status(500)
       .json({ message: "Error updating Hadith", error: error.message });
   }
 });
 
-// DELETE a hadith by ID
 // DELETE a hadith by ID
 router.delete("/delete-hadith/:id", async (req, res) => {
   const { id } = req.params;
