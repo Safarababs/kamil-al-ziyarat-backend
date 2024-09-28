@@ -39,7 +39,7 @@ const hadithSchema = new mongoose.Schema(
     },
     redText: {
       type: String, // Added redText field
-      required: false,
+      required: true,
     },
   },
   { timestamps: true }

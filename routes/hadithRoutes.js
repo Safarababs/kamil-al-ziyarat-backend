@@ -17,7 +17,7 @@ router.get("/get-hadith/:chapterNumber/:hadithNumber", async (req, res) => {
 
     const hadith = await Hadith.findOne({
       chapterNumber: parseInt(chapterNumber, 10),
-      hadithNumber: hadithNumber,
+      hadithNumber: parseInt(hadithNumber, 10),
     });
 
     console.log("Fetched Hadith:", hadith);
@@ -48,6 +48,7 @@ router.get("/get-all-hadiths", async (req, res) => {
 });
 
 // Add a new hadith
+// Add a new hadith
 router.post("/add-hadith", async (req, res) => {
   try {
     const hadith = new Hadith(req.body);
@@ -55,7 +56,9 @@ router.post("/add-hadith", async (req, res) => {
     res.status(201).json(hadith);
   } catch (error) {
     console.error("Error adding Hadith:", error);
-    res.status(500).json({ message: "Failed to add Hadith" });
+    res
+      .status(400)
+      .json({ message: "Failed to add Hadith", error: error.message });
   }
 });
 
