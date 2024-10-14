@@ -15,7 +15,7 @@ app.use(
     allowedHeaders: ["Content-Type"],
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 // Routes
 app.use("/api", hadithRoutes); // Ensure '/api' matches the route in frontend fetch

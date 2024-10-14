@@ -11,24 +11,35 @@ router.get("/get-hadith/:chapterNumber/:hadithNumber", async (req, res) => {
   );
 
   try {
-    // Log all hadiths for debugging
-    const allHadiths = await Hadith.find({});
-    console.log("All Hadiths:", allHadiths); // Log all Hadiths
+    // Ensure chapterNumber is an integer
+    const chapterNum = parseInt(chapterNumber, 10);
+    const hadithNum = hadithNumber.trim(); // Trim any whitespace
 
-    const hadith = await Hadith.findOne({
-      chapterNumber: parseInt(chapterNumber, 10),
-      hadithNumber: parseInt(hadithNumber, 10),
-    });
+    console.log(
+      `Parsed Chapter Number: ${chapterNum} (Type: ${typeof chapterNum})`
+    );
+    console.log(
+      `Parsed Hadith Number: "${hadithNum}" (Type: ${typeof hadithNum})`
+    );
 
-    console.log("Fetched Hadith:", hadith);
+    // Querying with exact match
+    const query = {
+      chapterNumber: chapterNum,
+      hadithNumber: hadithNum, // Exact match
+    };
+
+    console.log("Querying with:", JSON.stringify(query));
+
+    const hadith = await Hadith.findOne(query);
 
     if (!hadith) {
       console.log(
-        `No hadith found for Chapter: ${chapterNumber}, Hadith: ${hadithNumber}`
+        `No hadith found for Chapter: ${chapterNum}, Hadith: "${hadithNum}"`
       );
       return res.status(404).send("Hadith not found");
     }
 
+    console.log("Fetched Hadith:", hadith);
     res.json(hadith);
   } catch (error) {
     console.error("Error fetching hadith:", error);
